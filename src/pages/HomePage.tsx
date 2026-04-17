@@ -1,9 +1,7 @@
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import {
-  ArrowRight,
   CalendarCheck2,
-  CheckCircle2,
   ChevronLeft,
   ChevronRight,
   Droplets,
