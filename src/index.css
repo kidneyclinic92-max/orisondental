@@ -1,0 +1,75 @@
+:root {
+  --ink: #2f3c4d;
+  --ink-soft: #4d5f74;
+  --muted: #74859a;
+  --line: #d3dbe5;
+  --surface: #edf1f5;
+  --card: #ffffff;
+  --accent: #0f6fa3;
+  --accent-hover: #0c5a85;
+  --accent-soft: rgba(15, 111, 163, 0.14);
+  --accent-glow: rgba(15, 111, 163, 0.22);
+  --warning: #b45309;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 24px rgba(12, 18, 34, 0.08);
+  --shadow-lg: 0 24px 48px rgba(12, 18, 34, 0.1);
+  --font-display: 'Libre Baskerville', Georgia, serif;
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --max: 1120px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  background: linear-gradient(180deg, #f2f5f8 0%, #e3e9f0 52%, #f0f4f8 100%);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
