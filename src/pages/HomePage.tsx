@@ -4,16 +4,9 @@ import {
   CalendarCheck2,
   ChevronLeft,
   ChevronRight,
-  Droplets,
-  HeartPulse,
-  Leaf,
   ScanSearch,
   ShieldCheck,
-  SmilePlus,
-  Sparkles,
   Stethoscope,
-  Timer,
-  UtensilsCrossed,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { MotionSection } from '../components/MotionSection'
@@ -29,17 +22,17 @@ const CLINIC_IMAGE = '/assets/homepage.png'
 
 const servicePreview = [
   {
-    Icon: Stethoscope,
+    img: '/assets/general_dentistry.png',
     title: 'General Dentistry',
     text: 'Checkups, hygiene care, fillings, and routine treatment.',
   },
   {
-    Icon: SmilePlus,
+    img: '/assets/braces_aligners.png',
     title: 'Braces & Aligners',
     text: 'Orthodontic options to straighten teeth and improve your bite.',
   },
   {
-    Icon: HeartPulse,
+    img: '/assets/restoration.png',
     title: 'Restorative Care',
     text: 'Crowns, implants, and treatments that restore function and confidence.',
   },
@@ -65,48 +58,44 @@ const trustPoints = [
 
 const dentalTips = [
   {
-    Icon: Timer,
     title: 'Brush Twice Daily',
     text: 'Brush for at least two minutes in the morning and before bed using fluoride toothpaste.',
+    imageSrc: '/assets/brushtwice.png',
+    imageAlt: 'Person brushing teeth',
   },
   {
-    Icon: Droplets,
     title: 'Floss Every Day',
     text: 'Flossing removes plaque and food particles from areas your toothbrush cannot reach.',
+    imageSrc: '/assets/floss.png',
+    imageAlt: 'Dental floss close-up',
   },
   {
-    Icon: UtensilsCrossed,
     title: 'Watch Your Diet',
     text: 'Limit sugary snacks and acidic drinks that can erode enamel and cause cavities.',
+    imageSrc: '/assets/diet.png',
+    imageAlt: 'Healthy smile-friendly foods',
   },
   {
-    Icon: Sparkles,
     title: 'Use Mouthwash',
     text: 'An antibacterial rinse helps reduce plaque, prevent gum disease, and freshen breath.',
+    imageSrc: '/assets/mouthwash.png',
+    imageAlt: 'Mouthwash bottle and cup',
   },
   {
-    Icon: Leaf,
     title: 'Stay Hydrated',
     text: 'Drinking water throughout the day helps wash away bacteria and keeps your mouth moist.',
+    imageSrc: '/assets/hydrated.png',
+    imageAlt: 'Person drinking water',
   },
   {
-    Icon: Stethoscope,
     title: 'Visit Your Dentist',
     text: 'Schedule checkups every six months for professional cleaning and early issue detection.',
+    imageSrc: '/assets/dentist.png',
+    imageAlt: 'Dental checkup in clinic',
   },
 ] as const
 
 const TOTAL = dentalTips.length
-
-function getSignedOffset(index: number, current: number) {
-  let diff = index - current
-  const half = Math.floor(TOTAL / 2)
-
-  if (diff > half) diff -= TOTAL
-  if (diff < -half) diff += TOTAL
-
-  return diff
-}
 
 function TipsCarousel() {
   const [current, setCurrent] = useState(0)
@@ -131,73 +120,60 @@ function TipsCarousel() {
           <p>Simple daily habits that help protect your teeth and gums between visits.</p>
         </motion.header>
 
-        <div className="c3d-scene">
-          <div className="c3d-stage">
-            {dentalTips.map((tip, i) => {
-              const offset = getSignedOffset(i, current)
-              const absOffset = Math.abs(offset)
-
-              const pose =
-                offset === 0
-                  ? { x: 0, y: 30, scale: 1.08, rotateY: 0, opacity: 1, zIndex: 50 }
-                  : offset === -1
-                    ? { x: -260, y: 24, scale: 0.88, rotateY: -35, opacity: 0.92, zIndex: 40 }
-                    : offset === 1
-                      ? { x: 260, y: 24, scale: 0.88, rotateY: 35, opacity: 0.92, zIndex: 40 }
-                      : offset === -2
-                        ? { x: -185, y: -20, scale: 0.68, rotateY: 55, opacity: 0.45, zIndex: 20 }
-                        : offset === 2
-                          ? { x: 185, y: -20, scale: 0.68, rotateY: -55, opacity: 0.45, zIndex: 20 }
-                          : { x: 0, y: -50, scale: 0.5, rotateY: 180, opacity: 0, zIndex: 5 }
-
-              return (
-                <motion.div
-                  key={tip.title}
-                  className={`c3d-card ${offset === 0 ? 'c3d-card--front' : ''} ${absOffset <= 2 ? 'c3d-card--visible' : ''}`}
-                  initial={false}
-                  animate={pose}
-                  transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <div className="c3d-card-icon">
-                    <tip.Icon size={26} aria-hidden="true" />
-                  </div>
-                  <h3>{tip.title}</h3>
-                  <p>{tip.text}</p>
-                </motion.div>
-              )
-            })}
-          </div>
-
-          <div className="c3d-ground" aria-hidden="true" />
-        </div>
-
-        <div className="c3d-nav">
+        <div className="tips-slider">
           <button
-            className="c3d-btn"
+            className="tips-arrow"
             onClick={() => setCurrent((value) => (value - 1 + TOTAL) % TOTAL)}
             aria-label="Previous tip"
           >
             <ChevronLeft size={20} />
           </button>
 
-          <div className="c3d-dots">
-            {dentalTips.map((t, i) => (
-              <button
-                key={t.title}
-                className={`c3d-dot ${current === i ? 'c3d-dot--on' : ''}`}
-                onClick={() => setCurrent(i)}
-                aria-label={`Tip ${i + 1}`}
-              />
-            ))}
+          <div className="tips-viewport">
+            {[((current - 1 + TOTAL) % TOTAL), current, ((current + 1) % TOTAL)].map((idx, pos) => {
+              const tip = dentalTips[idx]
+              const isCenter = pos === 1
+              return (
+                <motion.article
+                  key={`${tip.title}-${idx}-${current}`}
+                  className={`tips-card ${isCenter ? 'tips-card--center' : 'tips-card--side'}`}
+                  initial={{ opacity: 0, scale: 0.92, y: 8 }}
+                  animate={{
+                    opacity: isCenter ? 1 : 0.45,
+                    scale: isCenter ? 1 : 0.82,
+                    filter: isCenter ? 'blur(0px)' : 'blur(2.5px)',
+                    y: isCenter ? -8 : 0,
+                  }}
+                  transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <div className="tips-card-img">
+                    <img src={tip.imageSrc} alt={tip.imageAlt} loading="lazy" />
+                  </div>
+                  <h3>{tip.title}</h3>
+                  <p>{tip.text}</p>
+                </motion.article>
+              )
+            })}
           </div>
 
           <button
-            className="c3d-btn"
+            className="tips-arrow"
             onClick={() => setCurrent((value) => (value + 1) % TOTAL)}
             aria-label="Next tip"
           >
             <ChevronRight size={20} />
           </button>
+        </div>
+
+        <div className="tips-dots">
+          {dentalTips.map((t, i) => (
+            <button
+              key={t.title}
+              className={`tips-dot ${current === i ? 'tips-dot--on' : ''}`}
+              onClick={() => setCurrent(i)}
+              aria-label={`Tip ${i + 1}`}
+            />
+          ))}
         </div>
       </div>
     </MotionSection>
@@ -302,7 +278,7 @@ export function HomePage() {
             <motion.div className="home-svc-cards" variants={gridStagger}>
               {servicePreview.map((svc) => (
                 <motion.div key={svc.title} className="home-svc-card" variants={fadeUp}>
-                  <svc.Icon size={24} className="home-svc-card-icon" aria-hidden="true" />
+                  <img src={svc.img} alt={svc.title} className="home-svc-card-img" loading="lazy" />
                   <span>{svc.title}</span>
                 </motion.div>
               ))}
