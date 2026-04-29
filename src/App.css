@@ -2763,9 +2763,24 @@
 }
 
 @media (max-width: 640px) {
+  .home-premium-hero {
+    min-height: 76vh;
+  }
+
   .home-premium-hero-shell {
-    padding-top: 6rem;
-    padding-bottom: 4.5rem;
+    padding-top: 5.4rem;
+    padding-bottom: 3.6rem;
+  }
+
+  .home-premium-copy h1 {
+    font-size: clamp(2rem, 10.2vw, 2.7rem);
+    white-space: normal;
+    line-height: 1.06;
+  }
+
+  .home-premium-tagline {
+    font-size: clamp(1rem, 4.5vw, 1.2rem);
+    margin-bottom: 0.65rem;
   }
 
   .home-premium-panel,
@@ -2783,6 +2798,10 @@
   .home-premium-actions {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .home-premium-actions .btn {
+    width: 100%;
   }
 
 }
@@ -3530,7 +3549,7 @@
   margin: 0 0 1.1rem;
   color: var(--ink-soft);
   line-height: 1.8;
-  font-size: 1.3rem;
+  font-size: 1.08rem;
 }
 
 .home-about-divider {
@@ -3638,7 +3657,7 @@
   font-size: clamp(1.8rem, 3.4vw, 2.5rem);
   line-height: 1.15;
   letter-spacing: -0.02em;
-  background: linear-gradient(135deg, #0a2034 0%, #0f6fa3 55%, #14a3c7 100%);
+  background: linear-gradient(135deg, #d7edff 0%, #8dd6ff 52%, #52c9ee 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -3797,8 +3816,74 @@
   }
 
   .tips-viewport {
-    grid-template-columns: 0.4fr 1fr 0.4fr;
-    gap: 0.5rem;
+    grid-template-columns: 0.2fr 1fr 0.2fr;
+    gap: 0.35rem;
+  }
+
+  .tips-slider {
+    position: relative;
+    margin-top: 1.4rem;
+  }
+
+  .tips-slider > .tips-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 34px;
+    height: 34px;
+    z-index: 3;
+    background: rgba(7, 18, 31, 0.72);
+    border-color: rgba(125, 211, 252, 0.36);
+  }
+
+  .tips-slider > .tips-arrow:first-child {
+    left: 0.15rem;
+  }
+
+  .tips-slider > .tips-arrow:last-child {
+    right: 0.15rem;
+  }
+
+  .tips-card {
+    padding: 1rem 0.8rem 1rem;
+    gap: 0.6rem;
+  }
+
+  .tips-card-img {
+    height: 124px;
+  }
+
+  .tips-card h3 {
+    font-size: 0.95rem;
+  }
+
+  .tips-card p {
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+
+  .home-split-content h2 {
+    margin-top: 0;
+    font-size: clamp(1.55rem, 8vw, 2.05rem);
+  }
+
+  .home-about-text {
+    font-size: 0.98rem;
+    line-height: 1.65;
+  }
+
+  .home-svc-card {
+    padding: 0.45rem 0.2rem;
+  }
+
+  .home-svc-card-img {
+    width: 108px;
+    height: 68px;
+  }
+
+  .home-svc-card span {
+    font-size: 0.92rem;
+    line-height: 1.15;
   }
 }
 
