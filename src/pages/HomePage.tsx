@@ -11,6 +11,7 @@ import {
 import { Link } from 'react-router-dom'
 import { MotionSection } from '../components/MotionSection'
 import { useContent } from '../content/ContentContext'
+import { defaultContent } from '../content/defaultContent'
 import {
   fadeUp,
   gridStagger,
@@ -72,7 +73,11 @@ function TipsCarousel() {
                   transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
                 >
                   <div className="tips-card-img">
-                    <img src={tip.imageSrc} alt={tip.imageAlt} loading="lazy" />
+                    <img
+                      src={tip.imageSrc || defaultContent.pages.home.dentalTips[idx].imageSrc}
+                      alt={tip.imageAlt || tip.title}
+                      loading="lazy"
+                    />
                   </div>
                   <h3>{tip.title}</h3>
                   <p>{tip.text}</p>
@@ -154,7 +159,7 @@ export function HomePage() {
             playsInline
             preload="metadata"
           >
-            <source src={home.heroVideoSrc} type="video/mp4" />
+            <source src={home.heroVideoSrc || defaultContent.pages.home.heroVideoSrc} type="video/mp4" />
           </video>
         </div>
         <div className="hero-overlay home-premium-hero-overlay" aria-hidden="true" />
