@@ -1,11 +1,12 @@
 import { Link, NavLink, Outlet } from 'react-router-dom'
-import { useContent } from '../content/ContentContext'
+import { useContent } from '../content/useContent'
 import { defaultContent } from '../content/defaultContent'
 import { validateContent } from '../content/validation'
 
 const links = [
   { label: 'Dashboard', path: '/admin' },
   { label: 'Site Settings', path: '/admin/site' },
+  { label: 'Appointments', path: '/admin/appointments' },
   { label: 'Home', path: '/admin/home' },
   { label: 'Services', path: '/admin/services' },
   { label: 'Achievements', path: '/admin/achievements' },

@@ -4212,9 +4212,127 @@
   cursor: pointer;
 }
 
+.admin-btn-solid {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+  color: #fff;
+}
+
 .admin-btn-danger {
   border-color: #fecaca;
   color: #991b1b;
+}
+
+.admin-filter-row {
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.admin-chip {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  border-radius: 999px;
+  padding: 0.45rem 0.85rem;
+  font-weight: 600;
+  color: #0f172a;
+  cursor: pointer;
+}
+
+.admin-chip.is-active {
+  background: rgba(29, 78, 216, 0.12);
+  border-color: rgba(29, 78, 216, 0.35);
+  color: #1d4ed8;
+}
+
+.admin-appointments-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.admin-appointment-card {
+  background: #fff;
+  border: 1px solid #d8e3ef;
+  border-radius: 14px;
+  padding: 0.95rem;
+  box-shadow: 0 10px 26px rgba(2, 8, 23, 0.04);
+}
+
+.admin-appointment-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+
+.admin-appointment-email {
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.admin-appointment-meta {
+  color: #64748b;
+  margin: 0.35rem 0;
+  font-size: 0.92rem;
+}
+
+.admin-appointment-created {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.admin-appointment-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.admin-btn-danger {
+  border-color: #fca5a5;
+  background: #fff;
+  color: #991b1b;
+}
+
+.admin-appointment-notes {
+  margin: 0.75rem 0 0;
+  color: #475569;
+  font-size: 0.92rem;
+}
+
+.admin-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 1.25rem 0.5rem;
+  justify-content: center;
+  color: #475569;
+}
+
+.admin-appointment-badge {
+  margin-top: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.admin-appointment-badge--ok {
+  background: rgba(34, 197, 94, 0.12);
+  color: #166534;
+  border: 1px solid rgba(34, 197, 94, 0.28);
+}
+
+.admin-appointment-badge--bad {
+  background: rgba(239, 68, 68, 0.12);
+  color: #991b1b;
+  border: 1px solid rgba(239, 68, 68, 0.28);
 }
 
 .admin-errors {
@@ -4304,6 +4422,10 @@
   .admin-toolbar {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .admin-appointments-grid {
+    grid-template-columns: 1fr;
   }
 }
 

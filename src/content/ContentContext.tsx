@@ -1,16 +1,8 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { defaultContent } from './defaultContent'
 import { loadContent, resetContent, saveContent } from './service'
 import type { SiteContent } from './types'
-
-type ContentContextValue = {
-  content: SiteContent
-  setContent: (content: SiteContent) => void
-  updateContent: (updater: (prev: SiteContent) => SiteContent) => void
-  resetToDefault: () => void
-}
-
-const ContentContext = createContext<ContentContextValue | null>(null)
+import { ContentContext } from './ContentContextInternal'
 
 export function ContentProvider({ children }: { children: ReactNode }) {
   const [content, setContentState] = useState<SiteContent>(() => {
@@ -47,10 +39,4 @@ export function ContentProvider({ children }: { children: ReactNode }) {
   )
 
   return <ContentContext.Provider value={value}>{children}</ContentContext.Provider>
-}
-
-export function useContent() {
-  const value = useContext(ContentContext)
-  if (!value) throw new Error('useContent must be used inside ContentProvider')
-  return value
 }

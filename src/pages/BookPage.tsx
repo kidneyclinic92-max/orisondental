@@ -2,7 +2,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { CalendarPlus } from 'lucide-react'
 import { AppointmentForm } from '../components/AppointmentForm'
 import { CardIcon } from '../components/CardIcon'
-import { useContent } from '../content/ContentContext'
+import { useContent } from '../content/useContent'
 import { defaultViewport, fadeUp, sectionStagger } from '../motion/variants'
 
 export function BookPage() {

@@ -1,7 +1,7 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
-import { useContent } from '../content/ContentContext'
+import { useContent } from '../content/useContent'
 import { sectionReveal } from '../motion/variants'
 
 const headerTransition = { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const }
@@ -48,7 +48,8 @@ export function Layout() {
   const { site } = content
 
   useEffect(() => {
-    setMobileMenuOpen(false)
+    const t = window.setTimeout(() => setMobileMenuOpen(false), 0)
+    return () => window.clearTimeout(t)
   }, [location.pathname])
 
   return (

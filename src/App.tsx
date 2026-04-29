@@ -9,6 +9,7 @@ import { ContactEditorPage } from './admin/pages/ContactEditorPage'
 import { HomeEditorPage } from './admin/pages/HomeEditorPage'
 import { ServicesEditorPage } from './admin/pages/ServicesEditorPage'
 import { SiteSettingsPage } from './admin/pages/SiteSettingsPage'
+import { AppointmentsAdminPage } from './admin/pages/AppointmentsAdminPage'
 import { Layout } from './components/Layout'
 import { AboutPage } from './pages/AboutPage'
 import { AchievementsPage } from './pages/AchievementsPage'
@@ -31,6 +32,7 @@ function App() {
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<AdminDashboardPage />} />
         <Route path="site" element={<SiteSettingsPage />} />
+        <Route path="appointments" element={<AppointmentsAdminPage />} />
         <Route path="home" element={<HomeEditorPage />} />
         <Route path="services" element={<ServicesEditorPage />} />
         <Route path="achievements" element={<AchievementsEditorPage />} />

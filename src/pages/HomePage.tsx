@@ -10,7 +10,7 @@ import {
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { MotionSection } from '../components/MotionSection'
-import { useContent } from '../content/ContentContext'
+import { useContent } from '../content/useContent'
 import { defaultContent } from '../content/defaultContent'
 import {
   fadeUp,

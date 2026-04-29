@@ -1,5 +1,5 @@
 import { JsonEditor, TextAreaField, TextField } from '../components/AdminFields'
-import { useContent } from '../../content/ContentContext'
+import { useContent } from '../../content/useContent'
 
 export function BookEditorPage() {
   const { content, updateContent } = useContent()

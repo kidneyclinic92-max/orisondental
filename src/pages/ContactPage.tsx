@@ -2,7 +2,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { CircleCheck, Mail, MapPin, Phone } from 'lucide-react'
 import { type FormEvent, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useContent } from '../content/ContentContext'
+import { useContent } from '../content/useContent'
 import { defaultViewport, fadeUp, sectionStagger } from '../motion/variants'
 
 export function ContactPage() {

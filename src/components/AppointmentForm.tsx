@@ -1,7 +1,8 @@
 import { CircleCheck, ClipboardList } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
-import { useContent } from '../content/ContentContext'
+import { useContent } from '../content/useContent'
 import { CardIcon } from './CardIcon'
+import { addAppointment } from '../appointments/store'
 
 const initial = {
   name: '',
@@ -37,8 +38,16 @@ export function AppointmentForm() {
     e.preventDefault()
     if (!validate()) return
 
-    // Replace with your API, Formspree, or email integration.
     console.log('Appointment request', values)
+    addAppointment({
+      name: values.name,
+      email: values.email,
+      phone: values.phone,
+      date: values.date,
+      time: values.time,
+      service: values.service,
+      notes: values.notes,
+    })
     setSubmitted(true)
     setValues(initial)
   }

@@ -1,7 +1,7 @@
 import { Phone } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { MotionSection } from '../components/MotionSection'
-import { useContent } from '../content/ContentContext'
+import { useContent } from '../content/useContent'
 
 export function AboutPage() {
   const { content } = useContent()

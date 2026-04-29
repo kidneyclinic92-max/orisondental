@@ -1,5 +1,5 @@
 import { JsonEditor, TextField } from '../components/AdminFields'
-import { useContent } from '../../content/ContentContext'
+import { useContent } from '../../content/useContent'
 
 export function SiteSettingsPage() {
   const { content, updateContent } = useContent()

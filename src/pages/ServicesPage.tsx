@@ -1,7 +1,7 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { useContent } from '../content/ContentContext'
+import { useContent } from '../content/useContent'
 import {
   defaultViewport,
   fadeUp,
