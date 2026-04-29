@@ -1,7 +1,7 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { pillars } from '../data/homeCards'
+import { useContent } from '../content/ContentContext'
 import {
   defaultViewport,
   fadeUp,
@@ -11,6 +11,8 @@ import {
 
 export function ServicesPage() {
   const reduce = useReducedMotion()
+  const { content } = useContent()
+  const page = content.pages.services
 
   return (
     <main id="top" className="services-page">
@@ -24,15 +26,12 @@ export function ServicesPage() {
         viewport={defaultViewport}
       >
         <motion.header className="section-header" variants={fadeUp}>
-          <h2 id="services-heading">Services</h2>
-          <p>
-            From braces to aligners and implant-based restoration, our care is
-            designed to solve real dental concerns with practical treatment plans.
-          </p>
+          <h2 id="services-heading">{page.heading}</h2>
+          <p>{page.intro}</p>
         </motion.header>
 
         <motion.div className="home-ref-services-grid" variants={gridStagger}>
-          {pillars.map((p) => (
+          {page.cards.map((p) => (
             <motion.article
               key={p.title}
               className="home-ref-service-card"
@@ -50,8 +49,8 @@ export function ServicesPage() {
                   loading="lazy"
                 />
               </div>
-              <Link to="/book" className="home-ref-service-link">
-                Book consultation <ArrowRight size={16} />
+              <Link to={page.cardCtaPath} className="home-ref-service-link">
+                {page.cardCtaLabel} <ArrowRight size={16} />
               </Link>
             </motion.article>
           ))}

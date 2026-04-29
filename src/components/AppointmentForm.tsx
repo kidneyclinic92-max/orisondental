@@ -1,5 +1,6 @@
 import { CircleCheck, ClipboardList } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
+import { useContent } from '../content/ContentContext'
 import { CardIcon } from './CardIcon'
 
 const initial = {
@@ -13,19 +14,21 @@ const initial = {
 }
 
 export function AppointmentForm() {
+  const { content } = useContent()
+  const formContent = content.pages.book.form
   const [values, setValues] = useState(initial)
   const [submitted, setSubmitted] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   function validate() {
     const next: Record<string, string> = {}
-    if (!values.name.trim()) next.name = 'Please enter your name.'
-    if (!values.email.trim()) next.email = 'Please enter your email.'
+    if (!values.name.trim()) next.name = formContent.validation.nameRequired
+    if (!values.email.trim()) next.email = formContent.validation.emailRequired
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email))
-      next.email = 'Enter a valid email address.'
-    if (!values.phone.trim()) next.phone = 'Please enter a phone number.'
-    if (!values.date) next.date = 'Choose a preferred date.'
-    if (!values.service) next.service = 'Select a service or visit type.'
+      next.email = formContent.validation.emailInvalid
+    if (!values.phone.trim()) next.phone = formContent.validation.phoneRequired
+    if (!values.date) next.date = formContent.validation.dateRequired
+    if (!values.service) next.service = formContent.validation.serviceRequired
     setErrors(next)
     return Object.keys(next).length === 0
   }
@@ -44,18 +47,15 @@ export function AppointmentForm() {
     return (
       <div className="form-panel form-success" role="status">
         <CardIcon icon={CircleCheck} />
-        <h3>Thank you</h3>
-        <p>
-          We have received your request. Our team will contact you shortly to
-          confirm your appointment.
-        </p>
+        <h3>{formContent.successTitle}</h3>
+        <p>{formContent.successText}</p>
         <button
           type="button"
           className="btn btn-secondary"
           style={{ marginTop: '1.25rem' }}
           onClick={() => setSubmitted(false)}
         >
-          Book another visit
+          {formContent.bookAnotherLabel}
         </button>
       </div>
     )
@@ -66,7 +66,7 @@ export function AppointmentForm() {
       <CardIcon icon={ClipboardList} />
       <div className="form-row">
         <div className="form-group">
-          <label htmlFor="appt-name">Full name</label>
+          <label htmlFor="appt-name">{formContent.fields.nameLabel}</label>
           <input
             id="appt-name"
             name="name"
@@ -82,7 +82,7 @@ export function AppointmentForm() {
           ) : null}
         </div>
         <div className="form-group">
-          <label htmlFor="appt-email">Email</label>
+          <label htmlFor="appt-email">{formContent.fields.emailLabel}</label>
           <input
             id="appt-email"
             name="email"
@@ -101,7 +101,7 @@ export function AppointmentForm() {
       </div>
       <div className="form-row">
         <div className="form-group">
-          <label htmlFor="appt-phone">Phone</label>
+          <label htmlFor="appt-phone">{formContent.fields.phoneLabel}</label>
           <input
             id="appt-phone"
             name="phone"
@@ -118,7 +118,7 @@ export function AppointmentForm() {
           ) : null}
         </div>
         <div className="form-group">
-          <label htmlFor="appt-service">Service / visit type</label>
+          <label htmlFor="appt-service">{formContent.fields.serviceLabel}</label>
           <select
             id="appt-service"
             name="service"
@@ -128,12 +128,11 @@ export function AppointmentForm() {
             }
             aria-invalid={!!errors.service}
           >
-            <option value="">Select…</option>
-            <option value="general">General consultation</option>
-            <option value="preventive">Preventive care</option>
-            <option value="followup">Follow-up visit</option>
-            <option value="urgent">Urgent same-day</option>
-            <option value="other">Other</option>
+            {formContent.serviceOptions.map((option, idx) => (
+              <option key={`${option}-${idx}`} value={idx === 0 ? '' : option.toLowerCase().replace(/\s+/g, '-')}>
+                {option}
+              </option>
+            ))}
           </select>
           {errors.service ? (
             <p className="form-error" role="alert">
@@ -144,7 +143,7 @@ export function AppointmentForm() {
       </div>
       <div className="form-row">
         <div className="form-group">
-          <label htmlFor="appt-date">Preferred date</label>
+          <label htmlFor="appt-date">{formContent.fields.dateLabel}</label>
           <input
             id="appt-date"
             name="date"
@@ -160,32 +159,33 @@ export function AppointmentForm() {
           ) : null}
         </div>
         <div className="form-group">
-          <label htmlFor="appt-time">Preferred time</label>
+          <label htmlFor="appt-time">{formContent.fields.timeLabel}</label>
           <select
             id="appt-time"
             name="time"
             value={values.time}
             onChange={(e) => setValues((v) => ({ ...v, time: e.target.value }))}
           >
-            <option value="">Flexible</option>
-            <option value="morning">Morning (8–12)</option>
-            <option value="afternoon">Afternoon (12–5)</option>
-            <option value="evening">Evening (by arrangement)</option>
+            {formContent.timeOptions.map((option, idx) => (
+              <option key={`${option}-${idx}`} value={idx === 0 ? '' : option.toLowerCase().replace(/\s+/g, '-')}>
+                {option}
+              </option>
+            ))}
           </select>
         </div>
       </div>
       <div className="form-group">
-        <label htmlFor="appt-notes">Notes (optional)</label>
+        <label htmlFor="appt-notes">{formContent.fields.notesLabel}</label>
         <textarea
           id="appt-notes"
           name="notes"
-          placeholder="Symptoms, questions, or accessibility needs"
+          placeholder={formContent.fields.notesPlaceholder}
           value={values.notes}
           onChange={(e) => setValues((v) => ({ ...v, notes: e.target.value }))}
         />
       </div>
       <button type="submit" className="btn btn-primary form-submit">
-        Request appointment
+        {formContent.submitLabel}
       </button>
     </form>
   )

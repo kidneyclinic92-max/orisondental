@@ -2,10 +2,13 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { CalendarPlus } from 'lucide-react'
 import { AppointmentForm } from '../components/AppointmentForm'
 import { CardIcon } from '../components/CardIcon'
+import { useContent } from '../content/ContentContext'
 import { defaultViewport, fadeUp, sectionStagger } from '../motion/variants'
 
 export function BookPage() {
   const reduce = useReducedMotion()
+  const { content } = useContent()
+  const page = content.pages.book
 
   return (
     <main id="top">
@@ -23,16 +26,12 @@ export function BookPage() {
         >
           <motion.div className="booking-aside" variants={fadeUp}>
             <CardIcon icon={CalendarPlus} />
-            <h2 id="book-heading">Request an appointment</h2>
-            <p>
-              Share a few details and we will confirm by phone or email. Prefer
-              to call? Reach us at <strong>(555) 014‑2290</strong> during
-              office hours.
-            </p>
+            <h2 id="book-heading">{page.heading}</h2>
+            <p>{page.intro}</p>
             <ul className="booking-list">
-              <li>Typical response within one business day</li>
-              <li>Encrypted handling of your contact information</li>
-              <li>Insurance and billing questions welcome in the notes field</li>
+              {page.bullets.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
             </ul>
           </motion.div>
           <motion.div variants={fadeUp}>

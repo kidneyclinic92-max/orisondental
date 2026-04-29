@@ -2,13 +2,13 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { CircleCheck, Mail, MapPin, Phone } from 'lucide-react'
 import { type FormEvent, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useContent } from '../content/ContentContext'
 import { defaultViewport, fadeUp, sectionStagger } from '../motion/variants'
-
-const PHONE_DISPLAY = '0336-001-1925'
-const PHONE_HREF = 'tel:+923360011925'
 
 export function ContactPage() {
   const reduce = useReducedMotion()
+  const { content } = useContent()
+  const page = content.pages.contact
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
@@ -17,11 +17,11 @@ export function ContactPage() {
     e.preventDefault()
     const trimmed = email.trim()
     if (!trimmed) {
-      setError('Please enter your email address.')
+      setError(page.emailRequiredError)
       return
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-      setError('Enter a valid email address.')
+      setError(page.emailInvalidError)
       return
     }
     setError('')
@@ -53,14 +53,11 @@ export function ContactPage() {
           viewport={defaultViewport}
         >
           <motion.header className="contact-hero" variants={fadeUp}>
-            <p className="contact-hero-kicker">Orison Dental &amp; Implant Clinic</p>
+            <p className="contact-hero-kicker">{page.kicker}</p>
             <h1 id="contact-heading" className="contact-hero-title">
-              Let’s start a conversation
+              {page.heading}
             </h1>
-            <p className="contact-hero-lede">
-              Questions about treatment, timing, or your first visit—reach out by phone or leave
-              your email and we’ll respond with clear next steps.
-            </p>
+            <p className="contact-hero-lede">{page.intro}</p>
             <div className="contact-hero-line" aria-hidden="true" />
           </motion.header>
 
@@ -71,12 +68,12 @@ export function ContactPage() {
                   <span className="contact-card-icon" aria-hidden="true">
                     <Phone size={18} strokeWidth={1.75} />
                   </span>
-                  <h2 className="contact-card-title">Phone</h2>
+                  <h2 className="contact-card-title">{page.cards[0]?.title ?? 'Phone'}</h2>
                 </div>
-                <a href={PHONE_HREF} className="contact-card-link">
-                  {PHONE_DISPLAY}
+                <a href={page.cards[0]?.href ?? '#'} className="contact-card-link">
+                  {page.cards[0]?.value}
                 </a>
-                <p className="contact-card-hint">Call during office hours for the fastest answer.</p>
+                <p className="contact-card-hint">{page.cards[0]?.text}</p>
               </div>
 
               <div className="contact-card">
@@ -84,11 +81,9 @@ export function ContactPage() {
                   <span className="contact-card-icon" aria-hidden="true">
                     <Mail size={18} strokeWidth={1.75} />
                   </span>
-                  <h2 className="contact-card-title">Email</h2>
+                  <h2 className="contact-card-title">{page.cards[1]?.title ?? 'Email'}</h2>
                 </div>
-                <p className="contact-card-text">
-                  Use the form — we monitor inquiries and reply as soon as we can.
-                </p>
+                <p className="contact-card-text">{page.cards[1]?.text}</p>
               </div>
 
               <div className="contact-card contact-card--muted">
@@ -96,19 +91,17 @@ export function ContactPage() {
                   <span className="contact-card-icon" aria-hidden="true">
                     <MapPin size={18} strokeWidth={1.75} />
                   </span>
-                  <h2 className="contact-card-title">Practice</h2>
+                  <h2 className="contact-card-title">{page.cards[2]?.title ?? 'Practice'}</h2>
                 </div>
-                <p className="contact-card-text">
-                  Advanced diagnostics and restorative care in one calm, patient-focused setting.
-                </p>
+                <p className="contact-card-text">{page.cards[2]?.text}</p>
               </div>
 
               <div className="contact-quick-actions">
-                <a href={PHONE_HREF} className="contact-btn contact-btn--ghost">
-                  Call now
+                <a href={page.callNowPath} className="contact-btn contact-btn--ghost">
+                  {page.callNowLabel}
                 </a>
-                <Link to="/book" className="contact-btn contact-btn--solid">
-                  Book consultation
+                <Link to={page.bookPath} className="contact-btn contact-btn--solid">
+                  {page.bookLabel}
                 </Link>
               </div>
             </motion.aside>
@@ -119,28 +112,24 @@ export function ContactPage() {
                   <div className="contact-success-icon" aria-hidden="true">
                     <CircleCheck size={36} strokeWidth={1.6} />
                   </div>
-                  <h2 className="contact-success-title">Thank you</h2>
-                  <p className="contact-success-text">
-                    We’ve received your note and will be in touch soon.
-                  </p>
+                  <h2 className="contact-success-title">{page.successHeading}</h2>
+                  <p className="contact-success-text">{page.successText}</p>
                 </div>
               ) : (
                 <form className="contact-form" onSubmit={handleSubmit} noValidate>
                   <div className="contact-form-header">
-                    <p className="contact-form-label">Email inquiry</p>
-                    <p className="contact-form-sub">
-                      Share your address—we’ll follow up with scheduling or answers.
-                    </p>
+                    <p className="contact-form-label">{page.formLabel}</p>
+                    <p className="contact-form-sub">{page.formSubheading}</p>
                   </div>
 
                   <div className="form-group contact-form-group">
-                    <label htmlFor="contact-email">Your email</label>
+                    <label htmlFor="contact-email">{page.emailLabel}</label>
                     <input
                       id="contact-email"
                       name="email"
                       type="email"
                       autoComplete="email"
-                      placeholder="you@example.com"
+                      placeholder={page.emailPlaceholder}
                       value={email}
                       onChange={(e) => {
                         setEmail(e.target.value)
@@ -156,7 +145,7 @@ export function ContactPage() {
                   </div>
 
                   <button type="submit" className="contact-form-submit">
-                    Send message
+                    {page.submitLabel}
                   </button>
                 </form>
               )}

@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { achievements } from '../data/achievements'
+import { useContent } from '../content/ContentContext'
 import {
   defaultViewport,
   fadeUp,
@@ -9,6 +9,8 @@ import {
 
 export function AchievementsPage() {
   const reduce = useReducedMotion()
+  const { content } = useContent()
+  const page = content.pages.achievements
 
   return (
     <main id="top" className="achievements-page">
@@ -32,18 +34,16 @@ export function AchievementsPage() {
         >
           <motion.header className="achievements-hero" variants={fadeUp}>
             <h2 id="achievements-heading" className="achievements-title">
-              Awards and Achievements
+              {page.heading}
             </h2>
             <p className="achievements-lede">
-              A record built in the treatment room—not on a template. Metrics
-              that reflect real outcomes, patient respect, and the standard we
-              hold ourselves to every day.
+              {page.intro}
             </p>
             <div className="achievements-hero-line" aria-hidden="true" />
           </motion.header>
 
           <motion.div className="achievements-showcase" variants={gridStagger}>
-            {achievements.map((a, index) => (
+            {page.items.map((a, index) => (
               <motion.article
                 key={a.title}
                 className={`achievement-tile ${index === 0 ? 'achievement-tile--spotlight' : ''}`}

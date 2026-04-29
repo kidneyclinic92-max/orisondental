@@ -1,39 +1,13 @@
 import { Phone } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { MotionSection } from '../components/MotionSection'
-
-const PHONE_DISPLAY = '0336-001-1925'
-const PHONE_HREF = 'tel:+923360011925'
-
-const metrics = [
-  {
-    value: '150+',
-    label: 'Patients cared for',
-    hint: 'Trusted outcomes across routine and advanced treatment.',
-  },
-  {
-    value: '15',
-    label: 'Specialists on staff',
-    hint: 'Orthodontics, surgery, and restorative expertise in one place.',
-  },
-] as const
-
-const offerings = [
-  {
-    title: 'Braces for all ages',
-    text: 'Customized orthodontic plans that align teeth and balance your bite with clarity at every step.',
-  },
-  {
-    title: 'Clear aligners',
-    text: 'Discreet, comfortable aligner therapy for confident smiles without traditional brackets.',
-  },
-  {
-    title: 'Implants & restoration',
-    text: 'Durable implant solutions and restorative work that feels natural and functions beautifully.',
-  },
-] as const
+import { useContent } from '../content/ContentContext'
 
 export function AboutPage() {
+  const { content } = useContent()
+  const page = content.pages.about
+  const { site } = content
+
   return (
     <main id="top" className="about-page">
       <MotionSection
@@ -49,12 +23,10 @@ export function AboutPage() {
 
         <div className="about-hero-inner">
           <h1 id="about-heading" className="about-hero-title">
-            Where precision meets calm, confident care
+            {page.heading}
           </h1>
           <p className="about-hero-lede">
-            We combine advanced diagnostics, meticulous technique, and a patient-first mindset—so
-            every visit feels considered, never rushed. Your oral health deserves a practice that
-            treats detail as seriously as you do.
+            {page.intro}
           </p>
           <div className="about-hero-line" aria-hidden="true" />
         </div>
@@ -65,7 +37,7 @@ export function AboutPage() {
           Clinic highlights
         </h2>
         <div className="about-metrics-grid">
-          {metrics.map((m) => (
+          {page.metrics.map((m) => (
             <article key={m.label} className="about-metric-card">
               <div className="about-metric-shine" aria-hidden="true" />
               <p className="about-metric-value">{m.value}</p>
@@ -82,16 +54,15 @@ export function AboutPage() {
       >
         <div className="about-offerings-head">
           <h2 id="about-services-heading" className="about-offerings-title">
-            Clinical focus
+            {page.offeringsHeading}
           </h2>
           <p className="about-offerings-sub">
-            Orthodontics, digital planning, and restorative excellence—built around your goals and
-            your timeline.
+            {page.offeringsIntro}
           </p>
         </div>
 
         <div className="about-offerings-grid">
-          {offerings.map(({ title, text }) => (
+          {page.offerings.map(({ title, text }) => (
             <article key={title} className="about-offering-card">
               <h3 className="about-offering-title">{title}</h3>
               <p className="about-offering-text">{text}</p>
@@ -104,22 +75,22 @@ export function AboutPage() {
         <div className="about-cta-inner">
           <div className="about-cta-copy">
             <h2 id="about-cta-heading" className="about-cta-title">
-              Ready when you are
+              {page.ctaHeading}
             </h2>
             <p className="about-cta-lede">
-              Call for a conversation, or book online—we’ll align the next step to your schedule.
+              {page.ctaText}
             </p>
-            <a href={PHONE_HREF} className="about-cta-phone-link">
+            <a href={site.phoneHref} className="about-cta-phone-link">
               <Phone size={18} aria-hidden />
-              {PHONE_DISPLAY}
+              {site.phoneDisplay}
             </a>
           </div>
           <div className="about-cta-actions">
-            <a href={PHONE_HREF} className="about-btn about-btn--ghost">
-              Call now
+            <a href={site.phoneHref} className="about-btn about-btn--ghost">
+              {page.ctaCallLabel}
             </a>
-            <Link to="/book" className="about-btn about-btn--solid">
-              Book consultation
+            <Link to={page.ctaBookPath} className="about-btn about-btn--solid">
+              {page.ctaBookLabel}
             </Link>
           </div>
         </div>

@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { MotionSection } from '../components/MotionSection'
+import { useContent } from '../content/ContentContext'
 import {
   fadeUp,
   gridStagger,
@@ -17,87 +18,11 @@ import {
   heroItem,
 } from '../motion/variants'
 
-const HERO_VIDEO_SRC = '/assets/Dental_Surgery_Video_Generation.mp4'
-const CLINIC_IMAGE = '/assets/homepage.png'
-
-const servicePreview = [
-  {
-    img: '/assets/general_dentistry.png',
-    title: 'General Dentistry',
-    text: 'Checkups, hygiene care, fillings, and routine treatment.',
-  },
-  {
-    img: '/assets/braces_aligners.png',
-    title: 'Braces & Aligners',
-    text: 'Orthodontic options to straighten teeth and improve your bite.',
-  },
-  {
-    img: '/assets/restoration.png',
-    title: 'Restorative Care',
-    text: 'Crowns, implants, and treatments that restore function and confidence.',
-  },
-] as const
-
-const trustPoints = [
-  {
-    Icon: Stethoscope,
-    title: 'Experienced Team',
-    text: 'Professional dentists focused on careful treatment and patient comfort.',
-  },
-  {
-    Icon: ScanSearch,
-    title: 'Modern Equipment',
-    text: 'Digital diagnostics for more efficient assessment and planning.',
-  },
-  {
-    Icon: ShieldCheck,
-    title: 'Clean & Safe',
-    text: 'Sterilized instruments and organized treatment spaces at every visit.',
-  },
-] as const
-
-const dentalTips = [
-  {
-    title: 'Brush Twice Daily',
-    text: 'Brush for at least two minutes in the morning and before bed using fluoride toothpaste.',
-    imageSrc: '/assets/brushtwice.png',
-    imageAlt: 'Person brushing teeth',
-  },
-  {
-    title: 'Floss Every Day',
-    text: 'Flossing removes plaque and food particles from areas your toothbrush cannot reach.',
-    imageSrc: '/assets/floss.png',
-    imageAlt: 'Dental floss close-up',
-  },
-  {
-    title: 'Watch Your Diet',
-    text: 'Limit sugary snacks and acidic drinks that can erode enamel and cause cavities.',
-    imageSrc: '/assets/diet.png',
-    imageAlt: 'Healthy smile-friendly foods',
-  },
-  {
-    title: 'Use Mouthwash',
-    text: 'An antibacterial rinse helps reduce plaque, prevent gum disease, and freshen breath.',
-    imageSrc: '/assets/mouthwash.png',
-    imageAlt: 'Mouthwash bottle and cup',
-  },
-  {
-    title: 'Stay Hydrated',
-    text: 'Drinking water throughout the day helps wash away bacteria and keeps your mouth moist.',
-    imageSrc: '/assets/hydrated.png',
-    imageAlt: 'Person drinking water',
-  },
-  {
-    title: 'Visit Your Dentist',
-    text: 'Schedule checkups every six months for professional cleaning and early issue detection.',
-    imageSrc: '/assets/dentist.png',
-    imageAlt: 'Dental checkup in clinic',
-  },
-] as const
-
-const TOTAL = dentalTips.length
-
 function TipsCarousel() {
+  const { content } = useContent()
+  const { home } = content.pages
+  const dentalTips = home.dentalTips
+  const TOTAL = dentalTips.length
   const [current, setCurrent] = useState(0)
   const [paused, setPaused] = useState(false)
 
@@ -116,8 +41,8 @@ function TipsCarousel() {
     >
       <div className="home-tips-shell">
         <motion.header className="home-tips-header" variants={fadeUp}>
-          <h2 id="home-tips-heading">Tips for a Healthier Smile</h2>
-          <p>Simple daily habits that help protect your teeth and gums between visits.</p>
+          <h2 id="home-tips-heading">{home.tipsHeading}</h2>
+          <p>{home.tipsSubheading}</p>
         </motion.header>
 
         <div className="tips-slider">
@@ -183,6 +108,10 @@ function TipsCarousel() {
 export function HomePage() {
   const reduce = useReducedMotion()
   const { scrollY } = useScroll()
+  const { content } = useContent()
+  const { home } = content.pages
+  const { site } = content
+  const trustIcons = [Stethoscope, ScanSearch, ShieldCheck] as const
   const heroY = useTransform(scrollY, [0, 600], [0, 200])
   const heroOpacity = useTransform(scrollY, [0, 500], [1, 0])
 
@@ -199,7 +128,7 @@ export function HomePage() {
             playsInline
             preload="metadata"
           >
-            <source src={HERO_VIDEO_SRC} type="video/mp4" />
+            <source src={home.heroVideoSrc} type="video/mp4" />
           </video>
         </div>
         <div className="hero-overlay home-premium-hero-overlay" aria-hidden="true" />
@@ -215,18 +144,18 @@ export function HomePage() {
           <div className="home-premium-copy">
 
             <motion.h1 id="hero-heading" variants={heroItem}>
-              Orison Dental Clinic
+              {home.heroTitle}
             </motion.h1>
             <motion.p className="hero-tagline home-premium-tagline" variants={heroItem}>
-              Transform Your Smile with Expert Care
+              {home.heroTagline}
             </motion.p>
 
             <motion.div className="home-premium-actions" variants={heroItem}>
-              <Link to="/book" className="btn btn-primary home-premium-cta">
-                Book Consultation
+              <Link to={home.heroPrimaryCtaPath} className="btn btn-primary home-premium-cta">
+                {home.heroPrimaryCtaLabel}
               </Link>
-              <Link to="/services" className="btn btn-secondary home-premium-link">
-                Explore Services
+              <Link to={home.heroSecondaryCtaPath} className="btn btn-secondary home-premium-link">
+                {home.heroSecondaryCtaLabel}
               </Link>
             </motion.div>
           </div>
@@ -245,40 +174,36 @@ export function HomePage() {
             <span className="home-split-accent" aria-hidden="true" />
             <div className="home-split-frame">
               <img
-                src={CLINIC_IMAGE}
-                alt="Modern dental treatment room at Orison Dental Clinic"
+                src={home.clinicImageSrc}
+                alt="Modern dental treatment room"
                 className="home-split-img"
                 loading="lazy"
               />
               <div className="home-split-caption">
                 <Stethoscope size={16} aria-hidden="true" />
-                <span>Orison Dental Clinic</span>
+                <span>{site.brandName}</span>
               </div>
             </div>
           </motion.div>
 
           <motion.div className="home-split-content" variants={gridStagger}>
             <motion.h2 id="home-svc-heading" variants={fadeUp}>
-              Orison Dental and Implant Clinic
+              {home.clinicHeading}
             </motion.h2>
 
             <motion.p className="home-about-text" variants={fadeUp}>
-              A modern dental care provider dedicated to delivering high-quality, patient-focused
-              treatments using advanced technology and expert care. The clinic specializes in
-              creating healthy, confident smiles through a range of orthodontic and restorative
-              solutions.
+              {home.clinicParagraphOne}
             </motion.p>
             <motion.p className="home-about-text" variants={fadeUp}>
-              With a strong emphasis on comfort, precision, and personalized treatment, Orison
-              offers a seamless and stress-free dental experience.
+              {home.clinicParagraphTwo}
             </motion.p>
 
             <motion.div className="home-about-divider" variants={fadeUp} aria-hidden="true" />
 
             <motion.div className="home-svc-cards" variants={gridStagger}>
-              {servicePreview.map((svc) => (
+              {home.servicePreview.map((svc) => (
                 <motion.div key={svc.title} className="home-svc-card" variants={fadeUp}>
-                  <img src={svc.img} alt={svc.title} className="home-svc-card-img" loading="lazy" />
+                  <img src={svc.imageSrc} alt={svc.imageAlt} className="home-svc-card-img" loading="lazy" />
                   <span>{svc.title}</span>
                 </motion.div>
               ))}
@@ -295,16 +220,18 @@ export function HomePage() {
       <MotionSection className="home-trust" aria-labelledby="home-trust-heading">
         <h2 id="home-trust-heading" className="sr-only">Why choose Orison Dental</h2>
         <motion.div className="home-trust-shell" variants={gridStagger}>
-          {trustPoints.map((tp, i) => (
+          {home.trustPoints.map((tp, i) => {
+            const Icon = trustIcons[i % trustIcons.length]
+            return (
             <motion.div key={tp.title} className="home-trust-item" variants={fadeUp}>
-              <tp.Icon size={28} className="home-trust-icon" aria-hidden="true" />
+              <Icon size={28} className="home-trust-icon" aria-hidden="true" />
               <h3>{tp.title}</h3>
               <p>{tp.text}</p>
-              {i < trustPoints.length - 1 && (
+              {i < home.trustPoints.length - 1 && (
                 <span className="home-trust-divider" aria-hidden="true" />
               )}
             </motion.div>
-          ))}
+          )})}
         </motion.div>
       </MotionSection>
 
@@ -312,21 +239,21 @@ export function HomePage() {
       <MotionSection className="home-cta-section" aria-labelledby="cta-heading">
         <div className="home-cta-panel">
           <motion.div className="home-cta-body" variants={fadeUp}>
-            <h2 id="cta-heading">Ready to book your next visit?</h2>
-            <p>Get in touch with our team to arrange a consultation or routine dental appointment.</p>
+            <h2 id="cta-heading">{home.ctaHeading}</h2>
+            <p>{home.ctaText}</p>
             <div className="home-cta-actions">
               <motion.div
                 whileHover={reduce ? undefined : { scale: 1.03 }}
                 whileTap={reduce ? undefined : { scale: 0.98 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 22 }}
               >
-                <Link to="/book" className="btn home-cta-button">
-                  Schedule Your Consultation
+                <Link to={home.ctaButtonPath} className="btn home-cta-button">
+                  {home.ctaButtonLabel}
                 </Link>
               </motion.div>
               <span className="home-cta-hint">
                 <CalendarCheck2 size={16} aria-hidden="true" />
-                Quick and simple online booking
+                {home.ctaHint}
               </span>
             </div>
           </motion.div>
