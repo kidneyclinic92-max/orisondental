@@ -327,7 +327,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .hero-video-wrap {
-    visibility: hidden;
+    /* Keep the hero video visible; only reduce animated effects elsewhere. */
+    visibility: visible;
   }
 
   .hero-overlay {

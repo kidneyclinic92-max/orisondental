@@ -1,5 +1,5 @@
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   CalendarCheck2,
   ChevronLeft,
@@ -114,6 +114,31 @@ export function HomePage() {
   const trustIcons = [Stethoscope, ScanSearch, ShieldCheck] as const
   const heroY = useTransform(scrollY, [0, 600], [0, 200])
   const heroOpacity = useTransform(scrollY, [0, 500], [1, 0])
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+
+  useEffect(() => {
+    const el = videoRef.current
+    if (!el) return
+
+    const attemptPlay = () => {
+      // Autoplay can be blocked on some mobile browsers; a muted play attempt
+      // usually succeeds, and fallback interaction will retry once.
+      const p = el.play()
+      if (p && typeof (p as Promise<void>).catch === 'function') {
+        ;(p as Promise<void>).catch(() => {
+          /* swallow autoplay errors */
+        })
+      }
+    }
+
+    if (el.readyState >= 2) {
+      attemptPlay()
+    } else {
+      const onLoaded = () => attemptPlay()
+      el.addEventListener('loadeddata', onLoaded, { once: true })
+      return () => el.removeEventListener('loadeddata', onLoaded)
+    }
+  }, [home.heroVideoSrc])
 
   return (
     <main id="top" className="home-premium">
@@ -121,6 +146,7 @@ export function HomePage() {
       <section className="hero-outer home-premium-hero" aria-labelledby="hero-heading">
         <div className="hero-video-wrap" aria-hidden="true">
           <video
+            ref={videoRef}
             className="hero-video"
             autoPlay
             muted
