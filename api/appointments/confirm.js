@@ -4,6 +4,30 @@ function getEnv(name) {
   return (process.env[name] ?? '').toString()
 }
 
+function getSmtpCandidates(gmailUser, gmailPass) {
+  const host = getEnv('SMTP_HOST').trim() || 'smtp.gmail.com'
+  const explicitPort = Number(getEnv('SMTP_PORT').trim())
+  const explicitSecure = getEnv('SMTP_SECURE').trim().toLowerCase()
+
+  if (explicitPort) {
+    const secure = explicitSecure ? explicitSecure === 'true' : explicitPort === 465
+    return [
+      {
+        host,
+        port: explicitPort,
+        secure,
+        requireTLS: !secure,
+        auth: { user: gmailUser, pass: gmailPass },
+      },
+    ]
+  }
+
+  return [
+    { host, port: 465, secure: true, auth: { user: gmailUser, pass: gmailPass } },
+    { host, port: 587, secure: false, requireTLS: true, auth: { user: gmailUser, pass: gmailPass } },
+  ]
+}
+
 function setCorsHeaders(req, res) {
   const configured = getEnv('CORS_ORIGIN').trim()
   const allowed = configured
@@ -72,15 +96,7 @@ export default async function handler(req, res) {
     })
   }
 
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-      user: gmailUser,
-      pass: gmailPass,
-    },
-  })
+  const smtpCandidates = getSmtpCandidates(gmailUser, gmailPass)
 
   const subject = `Appointment confirmed - ${clinicName}`
   const text = [
@@ -112,13 +128,30 @@ export default async function handler(req, res) {
   `
 
   try {
-    await transporter.sendMail({
-      from: gmailUser,
-      to,
-      subject,
-      text,
-      html,
-    })
+    let sent = false
+    let lastError = null
+
+    for (const config of smtpCandidates) {
+      try {
+        const transporter = nodemailer.createTransport(config)
+        await transporter.sendMail({
+          from: gmailUser,
+          to,
+          subject,
+          text,
+          html,
+        })
+        sent = true
+        break
+      } catch (err) {
+        lastError = err
+      }
+    }
+
+    if (!sent) {
+      throw lastError ?? new Error('All SMTP transport attempts failed.')
+    }
+
     return res.status(200).json({ ok: true })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Email send failed.'

@@ -31,6 +31,30 @@ function getEnv(name) {
   return (process.env[name] ?? '').toString()
 }
 
+function getSmtpCandidates(gmailUser, gmailPass) {
+  const host = getEnv('SMTP_HOST').trim() || 'smtp.gmail.com'
+  const explicitPort = Number(getEnv('SMTP_PORT').trim())
+  const explicitSecure = getEnv('SMTP_SECURE').trim().toLowerCase()
+
+  if (explicitPort) {
+    const secure = explicitSecure ? explicitSecure === 'true' : explicitPort === 465
+    return [
+      {
+        host,
+        port: explicitPort,
+        secure,
+        requireTLS: !secure,
+        auth: { user: gmailUser, pass: gmailPass },
+      },
+    ]
+  }
+
+  return [
+    { host, port: 465, secure: true, auth: { user: gmailUser, pass: gmailPass } },
+    { host, port: 587, secure: false, requireTLS: true, auth: { user: gmailUser, pass: gmailPass } },
+  ]
+}
+
 if (TROUBLESHOOTING) {
   app.use((req, _res, next) => {
     const stamp = new Date().toISOString()
@@ -82,15 +106,7 @@ app.post('/api/appointments/confirm', async (req, res) => {
     })
   }
 
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-      user: gmailUser,
-      pass: gmailPass,
-    },
-  })
+  const smtpCandidates = getSmtpCandidates(gmailUser, gmailPass)
 
   const subject = `Appointment confirmed — ${clinicName}`
 
@@ -123,13 +139,30 @@ app.post('/api/appointments/confirm', async (req, res) => {
   `
 
   try {
-    await transporter.sendMail({
-      from: gmailUser,
-      to,
-      subject,
-      text,
-      html,
-    })
+    let sent = false
+    let lastError = null
+
+    for (const config of smtpCandidates) {
+      try {
+        const transporter = nodemailer.createTransport(config)
+        await transporter.sendMail({
+          from: gmailUser,
+          to,
+          subject,
+          text,
+          html,
+        })
+        sent = true
+        break
+      } catch (err) {
+        lastError = err
+      }
+    }
+
+    if (!sent) {
+      throw lastError ?? new Error('All SMTP transport attempts failed.')
+    }
+
     if (TROUBLESHOOTING) {
       console.log(`[api-debug] Confirmation email sent to ${to}`)
     }
