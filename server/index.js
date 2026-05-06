@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import dotenv from 'dotenv'
+import cors from 'cors'
 
 dotenv.config()
 
@@ -10,6 +11,19 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const app = express()
+const configuredCorsOrigin = getEnv('CORS_ORIGIN').trim()
+const allowedOrigins = configuredCorsOrigin
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean)
+
+app.use(
+  cors({
+    origin: allowedOrigins.length > 0 ? allowedOrigins : true,
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type'],
+  }),
+)
 app.use(express.json({ limit: '1mb' }))
 const TROUBLESHOOTING = getEnv('API_TROUBLESHOOTING').toLowerCase() === 'true'
 
@@ -30,6 +44,8 @@ app.get('/api/health', (_req, res) => {
     ok: true,
     mode: 'node-server',
     troubleshooting: TROUBLESHOOTING,
+    corsOrigin:
+      allowedOrigins.length > 0 ? allowedOrigins : 'all-origins-allowed (set CORS_ORIGIN to restrict)',
     hasGmailUser: !!getEnv('GMAIL_USER').trim(),
     hasGmailPassword: !!getEnv('GMAIL_APP_PASSWORD').replace(/\s+/g, '').trim(),
   })

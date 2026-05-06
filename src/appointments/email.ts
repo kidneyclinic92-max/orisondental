@@ -1,10 +1,21 @@
 import type { AppointmentRequest } from './types'
 
+function getApiBaseUrl() {
+  const raw = (import.meta.env.VITE_API_BASE_URL ?? '').toString().trim()
+  if (!raw) return ''
+  return raw.endsWith('/') ? raw.slice(0, -1) : raw
+}
+
+function getConfirmEndpoint() {
+  const base = getApiBaseUrl()
+  return `${base}/api/appointments/confirm`
+}
+
 export async function sendAppointmentConfirmationEmail(
   appointment: AppointmentRequest,
   clinicName: string,
 ): Promise<{ ok: boolean; error?: string }> {
-  const endpoint = '/api/appointments/confirm'
+  const endpoint = getConfirmEndpoint()
   try {
     const resp = await fetch(endpoint, {
       method: 'POST',
@@ -16,7 +27,9 @@ export async function sendAppointmentConfirmationEmail(
       const text = await resp.text().catch(() => '')
       return {
         ok: false,
-        error: text || `Email API failed with ${resp.status} at ${endpoint} (origin: ${window.location.origin})`,
+        error:
+          text ||
+          `Email API failed with ${resp.status} at ${endpoint} (origin: ${window.location.origin})`,
       }
     }
 
