@@ -55,6 +55,14 @@ function getSmtpCandidates(gmailUser, gmailPass) {
   ]
 }
 
+function canUseEmailDebug(req) {
+  const token = getEnv('EMAIL_DEBUG_TOKEN').trim()
+  if (!token) return false
+  const headerToken = (req.headers['x-email-debug-token'] ?? '').toString().trim()
+  const queryToken = (req.query?.token ?? '').toString().trim()
+  return headerToken === token || queryToken === token
+}
+
 if (TROUBLESHOOTING) {
   app.use((req, _res, next) => {
     const stamp = new Date().toISOString()
@@ -73,6 +81,56 @@ app.get('/api/health', (_req, res) => {
     hasGmailUser: !!getEnv('GMAIL_USER').trim(),
     hasGmailPassword: !!getEnv('GMAIL_APP_PASSWORD').replace(/\s+/g, '').trim(),
   })
+})
+
+app.get('/api/email-debug', async (req, res) => {
+  if (!canUseEmailDebug(req)) {
+    return res.status(403).json({
+      ok: false,
+      error: 'Forbidden. Set EMAIL_DEBUG_TOKEN and send it via x-email-debug-token header or ?token=.',
+    })
+  }
+
+  const gmailUser = getEnv('GMAIL_USER').trim()
+  const gmailPass = getEnv('GMAIL_APP_PASSWORD').replace(/\s+/g, '').trim()
+  if (!gmailUser || !gmailPass) {
+    return res.status(500).json({
+      ok: false,
+      error: 'Missing GMAIL_USER or GMAIL_APP_PASSWORD.',
+    })
+  }
+
+  const smtpCandidates = getSmtpCandidates(gmailUser, gmailPass)
+  const attempts = []
+
+  for (const config of smtpCandidates) {
+    const attempt = {
+      host: config.host,
+      port: config.port,
+      secure: !!config.secure,
+    }
+    try {
+      const transporter = nodemailer.createTransport(config)
+      await transporter.verify()
+      attempts.push({ ...attempt, ok: true })
+      return res.json({ ok: true, attempts })
+    } catch (e) {
+      attempts.push({
+        ...attempt,
+        ok: false,
+        error: {
+          name: e?.name ?? null,
+          message: e?.message ?? 'Unknown SMTP error',
+          code: e?.code ?? null,
+          responseCode: e?.responseCode ?? null,
+          command: e?.command ?? null,
+          response: e?.response ?? null,
+        },
+      })
+    }
+  }
+
+  return res.status(500).json({ ok: false, attempts })
 })
 
 app.post('/api/appointments/confirm', async (req, res) => {

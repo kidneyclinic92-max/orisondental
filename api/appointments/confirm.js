@@ -28,6 +28,14 @@ function getSmtpCandidates(gmailUser, gmailPass) {
   ]
 }
 
+function canUseEmailDebug(req) {
+  const token = getEnv('EMAIL_DEBUG_TOKEN').trim()
+  if (!token) return false
+  const headerToken = (req.headers['x-email-debug-token'] ?? '').toString().trim()
+  const queryToken = (req.query?.token ?? '').toString().trim()
+  return headerToken === token || queryToken === token
+}
+
 function setCorsHeaders(req, res) {
   const configured = getEnv('CORS_ORIGIN').trim()
   const allowed = configured
@@ -68,6 +76,56 @@ export default async function handler(req, res) {
 
   if (req.method === 'OPTIONS') {
     return res.status(204).end()
+  }
+  if (req.method === 'GET') {
+    if (!canUseEmailDebug(req)) {
+      return res.status(403).json({
+        ok: false,
+        error:
+          'Forbidden. Set EMAIL_DEBUG_TOKEN and send it via x-email-debug-token header or ?token=.',
+      })
+    }
+
+    const gmailUser = getEnv('GMAIL_USER').trim()
+    const gmailPass = getEnv('GMAIL_APP_PASSWORD').replace(/\s+/g, '').trim()
+    if (!gmailUser || !gmailPass) {
+      return res.status(500).json({
+        ok: false,
+        error: 'Missing GMAIL_USER or GMAIL_APP_PASSWORD.',
+      })
+    }
+
+    const smtpCandidates = getSmtpCandidates(gmailUser, gmailPass)
+    const attempts = []
+
+    for (const config of smtpCandidates) {
+      const attempt = {
+        host: config.host,
+        port: config.port,
+        secure: !!config.secure,
+      }
+      try {
+        const transporter = nodemailer.createTransport(config)
+        await transporter.verify()
+        attempts.push({ ...attempt, ok: true })
+        return res.status(200).json({ ok: true, attempts })
+      } catch (error) {
+        attempts.push({
+          ...attempt,
+          ok: false,
+          error: {
+            name: error?.name ?? null,
+            message: error?.message ?? 'Unknown SMTP error',
+            code: error?.code ?? null,
+            responseCode: error?.responseCode ?? null,
+            command: error?.command ?? null,
+            response: error?.response ?? null,
+          },
+        })
+      }
+    }
+
+    return res.status(500).json({ ok: false, attempts })
   }
   if (req.method !== 'POST') {
     return res.status(405).json({ ok: false, error: 'Method not allowed.' })
